@@ -10,21 +10,22 @@ module AlexaRubykit
       raise ArgumentError, 'Intent should exist on an IntentRequest' if @intent.nil?
       @type = 'INTENT_REQUEST'
       @name  = @intent['name']
-      @slots = @intent['slots']
+      @slots = {}
+      add_slots(@intent['slots'])
     end
 
     # Takes a Hash object.
     def add_hash_slots(slots)
-      raise ArgumentError, 'Slots can\'t be empty'
-      slots.each do |slot|
-        @slots[:slot[:name]] = Slot.new(slot[:name], slot[:value])
+      raise ArgumentError, 'Slots can\'t be empty' if slots.empty?
+      slots.each do |name, slot|
+        @slots[name] = Slot.new(slot[:name], slot[:value])
       end
       @slots
     end
 
     # Takes a JSON Object and symbolizes its keys.
     def add_slots(slots)
-      slot_hash = AlexaRubykit.transform_keys_to_symbols(value)
+      slot_hash = AlexaRubykit.transform_keys_to_symbols(slots)
       add_hash_slots(slot_hash)
     end
 
